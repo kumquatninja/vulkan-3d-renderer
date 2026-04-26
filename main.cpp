@@ -425,6 +425,10 @@ private:
 	}
 
 	void cleanup() {
+		vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
+		vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
+		vkDestroyFence(device, inFlightFence, nullptr);
+		
 		vkDestroyCommandPool(device, commandPool, nullptr);
 
 		for (auto framebuffer : swapChainFramebuffers) {
@@ -799,7 +803,17 @@ private:
 	}
 
 	void createSyncObjects() {
+		VkSemaphoreCreateInfo semaphoreInfo{};
+		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
+		VkFenceCreateInfo fenceInfo{};
+		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+		if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &imageAvailableSemaphore) != VK_SUCCESS ||
+			vkCreateSemaphore(device, &semaphoreInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS ||
+			vkCreateFence(device, &fenceInfo, nullptr, &inFlightFence) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create synchronization objects for a frame!");
+		}
 	}
 
 	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
