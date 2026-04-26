@@ -1,4 +1,4 @@
-cl /EHsc /std:c++17 main.cpp ^
+cl /EHsc /Zi /std:c++17 main.cpp ^
    /I"external\glfw-3.4.bin.WIN64\include" ^
    /I"%VULKAN_SDK%\Include" ^
    /link ^
