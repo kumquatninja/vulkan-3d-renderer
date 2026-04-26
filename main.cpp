@@ -1091,6 +1091,8 @@ private:
 				return i;
 			}
 		}
+
+		throw std::runtime_error("failed to find suitable memory type!");
 	}
 
 	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
