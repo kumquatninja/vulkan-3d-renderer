@@ -6,6 +6,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 #include <chrono>
 #include <iostream>
 #include <stdexcept>
@@ -194,6 +197,7 @@ private:
 		createGraphicsPipeline();
 		createFrameBuffers();
 		createCommandPool();
+		createTextureImage();
 		createVertexBuffer();
 		createIndexBuffer();
 		createUniformBuffers();
@@ -1061,6 +1065,17 @@ private:
 		createSwapChain();
 		createImageViews();
 		createFrameBuffers();
+	}
+
+	void createTextureImage()
+	{
+		int texWidth, texHeight, texChannels;
+		stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+		if (!pixels) {
+			throw std::runtime_error("failed to load texture image!");
+		}
 	}
 
 	void createVertexBuffer()

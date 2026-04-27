@@ -1,6 +1,7 @@
 cl /EHsc /Zi /std:c++17 main.cpp ^
    /I"external\glfw-3.4.bin.WIN64\include" ^
    /I"external\glm" ^
+   /I"external\stb" ^
    /I"%VULKAN_SDK%\Include" ^
    /link ^
    /LIBPATH:"external\glfw-3.4.bin.WIN64\lib-vc2022" ^
