@@ -1,0 +1,22 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Vulkan-Build-Batch",
+            "command": "${workspaceFolder}\\compile.bat",
+            "args": [],
+            "windows": {
+                "command": "${workspaceFolder}\\compile.bat"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Runs the custom batch file for compilation."
+        },
+    ],
+    "version": "2.0.0"
+}
