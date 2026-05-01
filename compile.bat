@@ -1,4 +1,4 @@
-cl /EHsc /Zi /O2 /std:c++17 main.cpp ^
+cl /EHsc /Zi /O2 /std:c++17 main.cpp WindowManager.cpp ^
    /I"external\glfw-3.4.bin.WIN64\include" ^
    /I"external\glm" ^
    /I"external\stb" ^

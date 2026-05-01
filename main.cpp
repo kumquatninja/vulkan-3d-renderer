@@ -1,6 +1,3 @@
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_DEFAULTS_ALIGNED_GENTYPES
@@ -12,6 +9,8 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+
+#include "WindowManager.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -117,7 +116,8 @@ public:
 	}
 
 private:
-	GLFWwindow* window;
+	KQ::WindowManager m_WindowManager;
+
 	VkInstance instance;
 	VkDebugUtilsMessengerEXT debugMessenger;
 	VkSurfaceKHR surface;
@@ -183,18 +183,7 @@ private:
 	VkQueue graphicsQueue;
 
 	void initWindow() {
-		glfwInit();
-
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-		window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-		glfwSetWindowUserPointer(window, this);
-		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-	}
-
-	static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-		auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
-		app->framebufferResized = true;
+		m_WindowManager.Init(WIDTH, HEIGHT, "KQuat Engine", this);
 	}
 
 	void initVulkan() {
@@ -287,7 +276,8 @@ private:
 
 	void createSurface()
 	{
-		if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS)
+		// TODO: Move this somewhere
+		if (glfwCreateWindowSurface(instance, m_WindowManager.GetWindow(), nullptr, &surface) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to create window surface!");
 		}
@@ -444,7 +434,7 @@ private:
 			return capabilities.currentExtent;
 		} else {
 			int width, height;
-			glfwGetFramebufferSize(window, &width, &height);
+			m_WindowManager.GetFramebufferSize(&width, &height);
 
 			VkExtent2D actualExtent = {
 				static_cast<uint32_t>(width),
@@ -559,8 +549,8 @@ private:
 	}
 
 	void mainLoop() {
-		while (!glfwWindowShouldClose(window)) {
-			glfwPollEvents();
+		while (!m_WindowManager.ShouldWindowClose()) {
+			m_WindowManager.PollEvents();
 			drawFrame();
 		}
 
@@ -613,9 +603,7 @@ private:
 		vkDestroySurfaceKHR(instance, surface, nullptr);
 		vkDestroyInstance(instance, nullptr);
 
-		glfwDestroyWindow(window);
-
-		glfwTerminate();
+		m_WindowManager.~WindowManager();
 	}
 
 	void createInstance() {
@@ -1162,10 +1150,10 @@ private:
 
 	void recreateSwapChain() {
 		int width = 0, height = 0;
-		glfwGetFramebufferSize(window, &width, &height);
+		m_WindowManager.GetFramebufferSize(&width, &height);
 		while (width == 0 || height == 0) {
-			glfwGetFramebufferSize(window, &width, &height);
-			glfwWaitEvents();
+			m_WindowManager.GetFramebufferSize(&width, &height);
+			m_WindowManager.WaitEvents();
 		}
 
 		vkDeviceWaitIdle(device);
