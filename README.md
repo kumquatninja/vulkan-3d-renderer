@@ -5,3 +5,5 @@ This is a renderer written by me using the Vulkan SDK.
 - Vulkan
 - GLM
 - GLFW 3.4
+
+![Spinning Viking House](demos/spinning-viking-house.gif)
