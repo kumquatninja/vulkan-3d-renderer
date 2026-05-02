@@ -2,14 +2,14 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "Vulkan-Build",
+            "label": "build-app",
             "command": "${workspaceFolder}\\compile.bat",
             "args": [],
             "windows": {
                 "command": "${workspaceFolder}\\compile.bat"
             },
             "linux": {
-                "command": "${workspaceFolder}/compile.sh"
+                "command": "make"
             },
             "problemMatcher": [
                 "$msCompile",
