@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -O2 -Iinclude -Ithird_party/stb -Ithird_party/glm -Ithird_party/glfw-3.4.bin.WIN64 -Ithird_party/tinyobjloader
+CXXFLAGS = -std=c++17 -g -Iinclude -Ithird_party/stb -Ithird_party/glm -Ithird_party/glfw-3.4.bin.WIN64 -Ithird_party/tinyobjloader
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
 SRC_DIR = src
@@ -22,7 +22,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f VulkanTest
+	rm -f $(TARGET)
+	rm -rf $(OBJ_DIR)
 
 run: $(TARGET)
 	./$(TARGET)
