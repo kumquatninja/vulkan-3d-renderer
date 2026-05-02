@@ -1,16 +1,30 @@
-STB_INCLUDE_PATH = ./external/stb
-TINYOBJ_INCLUDE_PATH = ./external/tinyobjloader
-
-CFLAGS = -std=c++17 -O2 -I$(STB_INCLUDE_PATH) -I$(TINYOBJ_INCLUDE_PATH)
+CXX = g++
+CXXFLAGS = -std=c++17 -O2 -Iinclude -Ithird_party/stb -Ithird_party/glm -Ithird_party/glfw-3.4.bin.WIN64 -Ithird_party/tinyobjloader
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
-VulkanTest: main.cpp
-	g++ $(CFLAGS) -o VulkanTest main.cpp WindowManager.cpp $(LDFLAGS)
+SRC_DIR = src
+INC_DIR = include
+OBJ_DIR = build
+BIN_DIR = bin
 
-.PHONY: test clean
+SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
+TARGET = $(BIN_DIR)/KQuatApp
 
-test: VulkanTest
-	./VulkanTest
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(OBJS) -o $(TARGET) $(LDFLAGS)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
 	rm -f VulkanTest
+
+run: $(TARGET)
+	./$(TARGET)
+
+.PHONY: all clean

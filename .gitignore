@@ -413,3 +413,7 @@ tags
 
 # Models
 !models/*.obj
+
+# Build objects
+*.o
+./build

@@ -6,7 +6,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-const std::string MODEL_PATH = "models/viking_room.obj";
+const std::string MODEL_PATH = "assets/models/viking_room.obj";
 
 namespace KQ {
 namespace ModelLoader {
