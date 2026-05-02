@@ -9,44 +9,45 @@ namespace KQ {
         WindowManager() = default;
 
         ~WindowManager() {
+            // TODO: MOVE THIS OUT OF HERE. NO RAII.
             glfwDestroyWindow(m_Window);
             glfwTerminate();
         }
 
         void Init(int width, int height, const char* title, void* userPointer);
 
-        void* GetWindowUserPointer()
+        inline void* GetWindowUserPointer()
         {
             glfwGetWindowUserPointer(m_Window);
         }
 
-        void SetFramebufferSizeCallback(GLFWframebuffersizefun callback) {
+        inline void SetFramebufferSizeCallback(GLFWframebuffersizefun callback) {
             glfwSetFramebufferSizeCallback(WindowManager::m_Window, callback);
         }
 
-        GLFWwindow* GetWindow() {
+        inline GLFWwindow* GetWindow() {
             return m_Window;
         }
 
-        bool ShouldWindowClose() {
+        inline bool ShouldWindowClose() {
             return glfwWindowShouldClose(m_Window);
         }
 
-        void PollEvents() {
+        inline void PollEvents() {
             glfwPollEvents();
         }
 
-        void GetFramebufferSize(int* width, int* height) {
+        inline void GetFramebufferSize(int* width, int* height) {
             glfwGetFramebufferSize(m_Window, width, height);
         }
 
-        void WaitEvents() {
+        inline void WaitEvents() {
             glfwWaitEvents();
         }
 
-        void ResetResizedFlag() { m_Resized = false; }
+        inline void ResetResizedFlag() { m_Resized = false; }
 
-        bool WasResized() const { return m_Resized; }
+        inline bool WasResized() const { return m_Resized; }
 
     private:
         GLFWwindow* m_Window;
