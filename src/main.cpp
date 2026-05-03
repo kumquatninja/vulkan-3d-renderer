@@ -56,7 +56,12 @@ private:
 
 	void ProcessInput(float deltaTime) {
 		float moveSpeed = 2.5f * deltaTime;
+		float moveSpeedShiftModifier = 2.0f;
 		const glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+		if (KQ::Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+			moveSpeed *= moveSpeedShiftModifier;
+		}
 
 		if (KQ::Input::IsKeyPressed(GLFW_KEY_W)) {
 			m_Camera.Move(m_Camera.GetForward() * moveSpeed);
