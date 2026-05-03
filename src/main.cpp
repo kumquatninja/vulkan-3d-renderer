@@ -2,6 +2,7 @@
 #include "WindowManager.hpp"
 #include "Renderer.hpp"
 #include "Input.hpp"
+#include "Camera.hpp"
 
 #include <iostream>
 
@@ -11,7 +12,6 @@ const uint32_t HEIGHT = 600;
 class HelloTriangleApplication {
 public:
 	void run() {
-		m_CameraFront = glm::normalize(m_CameraFront);
 		InitWindow();
 		InitVulkan();
 		MainLoop(); // blocking call
@@ -21,10 +21,7 @@ public:
 private:
 	KQ::WindowManager m_WindowManager;
 	KQ::Renderer m_Renderer;
-
-	glm::vec3 m_CameraPos	 = glm::vec3(2.0f, 2.0f, 2.0f);
-	glm::vec3 m_CameraFront  = glm::vec3(-2.0f, -2.0f, -2.0f);
-	glm::vec3 m_CameraUp 	 = glm::vec3(0.0f, 1.0f, 0.0f);
+	KQ::Camera m_Camera;
 
 	void InitWindow() {
 		m_WindowManager.Init(WIDTH, HEIGHT, "KQuat Engine", this);
@@ -45,7 +42,7 @@ private:
 			currentFrameTime = glfwGetTime();
 			deltaTime = currentFrameTime - lastFrameTime;
 			ProcessInput((float)deltaTime);
-			m_Renderer.DrawFrame(m_CameraPos, m_CameraFront, m_CameraUp);
+			m_Renderer.DrawFrame(m_Camera.GetPosition(), m_Camera.GetForward(), m_Camera.GetUp());
 			lastFrameTime = currentFrameTime;
 		}
 
@@ -61,31 +58,28 @@ private:
 		float moveSpeed = 2.5f * deltaTime;
 		const glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-		glm::vec3 right = glm::normalize(glm::cross(m_CameraFront, worldUp));
-
 		if (KQ::Input::IsKeyPressed(GLFW_KEY_W)) {
-			m_CameraPos += m_CameraFront * moveSpeed;
+			m_Camera.Move(m_Camera.GetForward() * moveSpeed);
 		}
 
 		if (KQ::Input::IsKeyPressed(GLFW_KEY_S)) {
-			m_CameraPos -= m_CameraFront * moveSpeed;
+			m_Camera.Move(m_Camera.GetForward() * -moveSpeed);
 		}
 
 		if (KQ::Input::IsKeyPressed(GLFW_KEY_A)) {
-			m_CameraPos -= right * moveSpeed;
-
+			m_Camera.Move(m_Camera.GetRight() * -moveSpeed);
 		}
 
 		if (KQ::Input::IsKeyPressed(GLFW_KEY_D)) {
-			m_CameraPos += right * moveSpeed;
+			m_Camera.Move(m_Camera.GetRight() * moveSpeed);
 		}
 
 		if (KQ::Input::IsKeyPressed(GLFW_KEY_SPACE)) {
-			m_CameraPos += worldUp * moveSpeed;
+			m_Camera.Move(worldUp * moveSpeed);
 		}
 
 		if (KQ::Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
-			m_CameraPos -= worldUp * moveSpeed;
+			m_Camera.Move(worldUp * -moveSpeed);
 		}
 	}
 };

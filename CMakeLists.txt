@@ -11,6 +11,7 @@ set(SOURCES
     src/Renderer.cpp 
     src/WindowManager.cpp
     src/Input.cpp
+    src/Camera.cpp
 )
 
 add_executable(KQuatApp ${SOURCES})
