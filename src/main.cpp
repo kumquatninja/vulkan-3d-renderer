@@ -59,7 +59,7 @@ private:
 
 	void ProcessInput(float deltaTime) {
 		float moveSpeed = 2.5f * deltaTime;
-		glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		const glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 		glm::vec3 right = glm::normalize(glm::cross(m_CameraFront, worldUp));
 
@@ -78,6 +78,14 @@ private:
 
 		if (KQ::Input::IsKeyPressed(GLFW_KEY_D)) {
 			m_CameraPos += right * moveSpeed;
+		}
+
+		if (KQ::Input::IsKeyPressed(GLFW_KEY_SPACE)) {
+			m_CameraPos += worldUp * moveSpeed;
+		}
+
+		if (KQ::Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
+			m_CameraPos -= worldUp * moveSpeed;
 		}
 	}
 };
