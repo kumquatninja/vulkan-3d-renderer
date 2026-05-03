@@ -39,7 +39,7 @@ private:
 
 	void Cleanup() {
 		m_Renderer.Cleanup();
-		m_WindowManager.~WindowManager();
+		m_WindowManager.Cleanup();
 	}
 };
 
