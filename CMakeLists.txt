@@ -10,6 +10,7 @@ set(SOURCES
     src/main.cpp 
     src/Renderer.cpp 
     src/WindowManager.cpp
+    src/Input.cpp
 )
 
 add_executable(KQuatApp ${SOURCES})
