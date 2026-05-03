@@ -49,7 +49,7 @@ namespace KQ {
         ~Renderer() {}
 
         void Init(GLFWwindow* window);
-        void DrawFrame();
+        void DrawFrame(const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp);
         void Cleanup();
 
         inline VkDevice* GetDevice() { return &device; }
@@ -174,7 +174,7 @@ namespace KQ {
         void CreateSyncObjects();
         void RecreateSwapChain();
         void CleanupSwapChain();
-        void UpdateUniformBuffer(uint32_t currentImage);
+        void UpdateUniformBuffer(uint32_t currentImage, const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp);
         void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
     };
