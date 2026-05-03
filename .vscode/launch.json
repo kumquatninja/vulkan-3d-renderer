@@ -8,10 +8,10 @@
             "name": "Debug (Linux GDB)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/KQuatApp",
+            "program": "${workspaceFolder}/build/bin/KQuatApp",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/bin",
             "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
             "preLaunchTask": "build-app",
@@ -27,10 +27,10 @@
             "name": "Debug (Windows MSVC)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/KQuatApp.exe",
+            "program": "${workspaceFolder}/build/bin/Debug/KQuatApp.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/bin/Debug",
             "preLaunchTask": "build-app"
         }
     ]

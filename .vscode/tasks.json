@@ -1,26 +1,36 @@
 {
+    "version": "2.0.0",
     "tasks": [
         {
+            "label": "CMake: Configure",
             "type": "shell",
+            "command": "cmake -S . -B build",
+            "problemMatcher": [],
+            "group": "none",
+            "detail": "Generates the build files (Makefiles or MSVC Solution)."
+        },
+        {
             "label": "build-app",
-            "command": "${workspaceFolder}\\compile.bat",
-            "args": [],
-            "windows": {
-                "command": "${workspaceFolder}\\compile.bat"
+            "type": "shell",
+            "command": "cmake --build build --config Debug",
+            "group": {
+                "kind": "build",
+                "isDefault": true
             },
-            "linux": {
-                "command": "make"
-            },
+            "dependsOn": [
+                "CMake: Configure"
+            ],
             "problemMatcher": [
                 "$msCompile",
                 "$gcc"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "detail": "Runs the custom script for compilation."
+            "detail": "Compiles the project using the generated build files."
         },
-    ],
-    "version": "2.0.0"
+        {
+            "label": "CMake: Clean",
+            "type": "shell",
+            "command": "cmake --build build --target clean",
+            "problemMatcher": []
+        }
+    ]
 }
