@@ -412,7 +412,7 @@ tags
 .swap
 
 # Models
-!models/*.obj
+!assets/models/*.obj
 
 # Build objects
 *.o
