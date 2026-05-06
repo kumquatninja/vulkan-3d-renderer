@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"C:/Projects/vulkan-3d-renderer/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
