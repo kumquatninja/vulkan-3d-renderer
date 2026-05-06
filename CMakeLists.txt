@@ -27,13 +27,13 @@ target_include_directories(KQuatApp PRIVATE
 
 if(WIN32)
     target_link_libraries(KQuatApp PRIVATE 
-        Vulkan::Vulkan 
+        Vulkan::Vulkan
         "${CMAKE_CURRENT_SOURCE_DIR}/third_party/glfw-3.4.bin.WIN64/lib-vc2022/glfw3dll.lib"
     )
 elseif(UNIX)
     find_package(glfw3 REQUIRED)
 
-    target_link_libraries(KQuatApp PRIVATE_HEADER
+    target_link_libraries(KQuatApp PRIVATE
         Vulkan::Vulkan
         glfw
     )
