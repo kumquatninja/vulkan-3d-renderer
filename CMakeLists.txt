@@ -26,7 +26,7 @@ target_include_directories(KQuatApp PRIVATE
 )
 
 if(WIN32)
-    target_link_libraries(KQuatApp PRIVATE 
+    target_link_libraries(KQuatApp PRIVATE
         Vulkan::Vulkan
         "${CMAKE_CURRENT_SOURCE_DIR}/third_party/glfw-3.4.bin.WIN64/lib-vc2022/glfw3dll.lib"
     )
@@ -53,6 +53,20 @@ if(WIN32)
     )
 endif()
 
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/assets/textures" DESTINATION "${CMAKE_BINARY_DIR}/bin/Debug/assets")
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/assets/models" DESTINATION "${CMAKE_BINARY_DIR}/bin/Debug/assets")
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/shaders" DESTINATION "${CMAKE_BINARY_DIR}/bin/Debug/")
+set(ASSET_SRC "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+set(SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
+
+add_custom_command(TARGET KQuatApp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:KQuatApp>/assets"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${ASSET_SRC}/textures"
+        "$<TARGET_FILE_DIR:KQuatApp>/assets/textures"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${ASSET_SRC}/models"
+        "$<TARGET_FILE_DIR:KQuatApp>/assets/models"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${SHADER_SRC}"
+        "$<TARGET_FILE_DIR:KQuatApp>/shaders"
+    
+    COMMENT "Copying assets and shaders to build directory..."
+)
