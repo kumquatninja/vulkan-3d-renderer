@@ -17,7 +17,7 @@ namespace KQ {
             glfwTerminate();
         }
 
-        inline void* GetWindowUserPointer()
+        inline void GetWindowUserPointer()
         {
             glfwGetWindowUserPointer(m_Window);
         }
