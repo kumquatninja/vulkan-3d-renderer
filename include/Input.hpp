@@ -9,9 +9,15 @@ namespace KQ {
         public:
             static void Update();
 
-            static bool IsKeyPressed(int keycode);
-            static void IsKeyReleased(int keycode);
-            static bool IsMouseButtonPressed(int button);
+            static bool IsKeyPressed(int keycode) {
+                return m_Keys[keycode];
+            }
+
+            static bool IsKeyReleased(int keycode);
+
+            static bool IsMouseButtonPressed(int button) {
+                return m_Buttons[button];
+            }
 
             static glm::vec2 GetMousePosition() { return m_MousePos; }
             static glm::vec2 GetMouseOffset() {
