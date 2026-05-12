@@ -16,6 +16,7 @@ namespace KQ {
 
         glfwSetKeyCallback(m_Window, Input::KeyCallback);
         glfwSetCursorPosCallback(m_Window, Input::MouseCallback);
+        glfwSetMouseButtonCallback(m_Window, Input::MouseButtonCallback);
 
         // glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
