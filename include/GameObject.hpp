@@ -24,11 +24,11 @@ namespace KQ {
         glm::vec3 rotation = glm::vec3(0.0f);
         glm::vec3 scale = glm::vec3(1.0f);
         
-        std::vector<vk::raii::Buffer> uniformBuffers;
-        std::vector<vk::raii::DeviceMemory> uniformBuffersMemory;
+        std::vector<VkBuffer> uniformBuffers;
+        std::vector<VkDeviceMemory> uniformBuffersMemory;
         std::vector<void*> uniformBuffersMapped;
 
-        std::vector<vk::raii::DescriptorSet> descriptorSets;
+        std::vector<VkDescriptorSet> descriptorSets;
 
         glm::mat4 getModelMatrix() const {
             glm::mat4 model = glm::mat4(1.0f);
