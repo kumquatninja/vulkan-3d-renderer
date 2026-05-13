@@ -1042,7 +1042,7 @@ namespace KQ {
     }
 
     void Renderer::LoadModel() {
-        ModelLoader::loadModel(vertices, indices);
+        ModelLoader::LoadModel(vertices, indices);
     }
 
     void Renderer::CreateVertexBuffer() {

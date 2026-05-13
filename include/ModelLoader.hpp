@@ -10,7 +10,7 @@ const std::string MODEL_PATH = "assets/models/viking_room.obj";
 
 namespace KQ {
 namespace ModelLoader {
-        static void loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices) {
+        static void LoadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices) {
             tinyobj::attrib_t attrib;
             std::vector<tinyobj::shape_t> shapes;
             std::vector<tinyobj::material_t> materials;
