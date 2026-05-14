@@ -3,6 +3,8 @@
 #include "Renderer.hpp"
 #include "Input.hpp"
 #include "Camera.hpp"
+#include "Scene.hpp"
+#include "GameObject.hpp"
 
 #include <iostream>
 
@@ -13,6 +15,7 @@ class HelloTriangleApplication {
 public:
 	void run() {
 		InitWindow();
+		InitScene();
 		InitVulkan();
 		MainLoop(); // blocking call
 		Cleanup();
@@ -22,9 +25,14 @@ private:
 	KQ::WindowManager m_WindowManager;
 	KQ::Renderer m_Renderer;
 	KQ::Camera m_Camera;
+	KQ::Scene m_Scene;
 
 	void InitWindow() {
 		m_WindowManager.Init(WIDTH, HEIGHT, "KQuat Engine", this);
+	}
+
+	void InitScene() {
+		m_Scene.gameObjects.emplace_back();
 	}
 
 	void InitVulkan() {
@@ -52,6 +60,7 @@ private:
 	void Cleanup() {
 		m_Renderer.Cleanup();
 		m_WindowManager.Cleanup();
+		m_Scene.Cleanup();
 	}
 
 	void ProcessInput(float deltaTime) {
