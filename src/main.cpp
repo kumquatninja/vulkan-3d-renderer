@@ -50,7 +50,7 @@ private:
 			currentFrameTime = glfwGetTime();
 			deltaTime = currentFrameTime - lastFrameTime;
 			ProcessInput((float)deltaTime);
-			m_Renderer.DrawFrame(m_Camera.GetPosition(), m_Camera.GetForward(), m_Camera.GetUp());
+			m_Renderer.DrawFrame(m_Camera);
 			lastFrameTime = currentFrameTime;
 		}
 

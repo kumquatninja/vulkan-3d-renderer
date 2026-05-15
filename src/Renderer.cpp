@@ -1212,7 +1212,7 @@ namespace KQ {
 		}
     }
 
-    void Renderer::DrawFrame(const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp) {
+    void Renderer::DrawFrame(const KQ::Camera& camera) {
 		vkWaitForFences(device, 1, &inFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
 
 		uint32_t imageIndex;
@@ -1225,7 +1225,7 @@ namespace KQ {
 			throw std::runtime_error("failed to acquire swap chain image!");
 		}
 
-		UpdateUniformBuffer(m_CurrentFrame, cameraPos, cameraFront, cameraUp);
+		UpdateUniformBuffer(m_CurrentFrame, camera.GetPosition(), camera.GetForward(), camera.GetUp());
 
 		vkResetFences(device, 1, &inFlightFences[m_CurrentFrame]);
 

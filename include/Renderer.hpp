@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Common.h"
-#include "Vertex.h"
-
 #include <chrono>
 #include <iostream>
 #include <stdexcept>
@@ -16,6 +13,10 @@
 #include <algorithm>
 #include <fstream>
 #include <array>
+
+#include "Common.h"
+#include "Vertex.h"
+#include "Camera.hpp"
 
 namespace KQ {
     const std::string TEXTURE_PATH = "assets/models/viking_room.png";
@@ -49,7 +50,7 @@ namespace KQ {
         ~Renderer() {}
 
         void Init(GLFWwindow* window);
-        void DrawFrame(const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp);
+        void DrawFrame(const KQ::Camera& camera);
         void Cleanup();
 
         inline VkDevice* GetDevice() { return &device; }
