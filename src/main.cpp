@@ -11,7 +11,7 @@
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
-class HelloTriangleApplication {
+class KQuatApp {
 public:
 	void run() {
 		InitWindow();
@@ -101,7 +101,7 @@ private:
 };
 
 int main() {
-	HelloTriangleApplication app;
+	KQuatApp app;
 
 	try {
 		app.run();
