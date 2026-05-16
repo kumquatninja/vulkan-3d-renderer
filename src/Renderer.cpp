@@ -12,6 +12,7 @@
 
 #include "ModelLoader.hpp"
 #include "Renderer.hpp"
+#include "GameObject.hpp"
 
 namespace KQ {
     void Renderer::Init(GLFWwindow* window) {
@@ -1212,7 +1213,7 @@ namespace KQ {
 		}
     }
 
-    void Renderer::DrawFrame(const KQ::Camera& camera) {
+    void Renderer::DrawFrame(const KQ::Camera& camera, const KQ::Scene& scene) {
 		vkWaitForFences(device, 1, &inFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
 
 		uint32_t imageIndex;
@@ -1225,7 +1226,7 @@ namespace KQ {
 			throw std::runtime_error("failed to acquire swap chain image!");
 		}
 
-		UpdateUniformBuffer(m_CurrentFrame, camera.GetPosition(), camera.GetForward(), camera.GetUp());
+		UpdateUniformBuffer(m_CurrentFrame, camera.GetPosition(), camera.GetForward(), camera.GetUp(), scene);
 
 		vkResetFences(device, 1, &inFlightFences[m_CurrentFrame]);
 
@@ -1310,15 +1311,14 @@ namespace KQ {
 		vkDestroySwapchainKHR(device, swapChain, nullptr);
     }
 
-    void Renderer::UpdateUniformBuffer(uint32_t currentImage, const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp) {
+    void Renderer::UpdateUniformBuffer(uint32_t currentImage, const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp, const KQ::Scene& scene) {
         static auto startTime = std::chrono::high_resolution_clock::now();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 		UniformBufferObject ubo{};
-		ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		ubo.model *= glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		ubo.model = scene.gameObjects[0].getModelMatrix();
 		ubo.view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
 		ubo.proj[1][1] *= -1; // GLM was originally designed for OpenGL, where the Y component of the clip coordinates is inverted.

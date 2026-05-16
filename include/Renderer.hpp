@@ -17,6 +17,7 @@
 #include "Common.h"
 #include "Vertex.h"
 #include "Camera.hpp"
+#include "Scene.hpp"
 
 namespace KQ {
     const std::string TEXTURE_PATH = "assets/models/viking_room.png";
@@ -50,7 +51,7 @@ namespace KQ {
         ~Renderer() {}
 
         void Init(GLFWwindow* window);
-        void DrawFrame(const KQ::Camera& camera);
+        void DrawFrame(const KQ::Camera& camera, const KQ::Scene& scene);
         void Cleanup();
 
         inline VkDevice* GetDevice() { return &device; }
@@ -175,7 +176,7 @@ namespace KQ {
         void CreateSyncObjects();
         void RecreateSwapChain();
         void CleanupSwapChain();
-        void UpdateUniformBuffer(uint32_t currentImage, const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp);
+        void UpdateUniformBuffer(uint32_t currentImage, const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp, const KQ::Scene& scene);
         void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
     };

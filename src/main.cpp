@@ -43,6 +43,7 @@ private:
 		double lastFrameTime = glfwGetTime();
 		double currentFrameTime = glfwGetTime();
 		double deltaTime = 0.0f;
+		const float SPEED = 0.02f;
 
 		while (!m_WindowManager.ShouldWindowClose()) {
 			m_WindowManager.PollEvents();
@@ -50,7 +51,8 @@ private:
 			currentFrameTime = glfwGetTime();
 			deltaTime = currentFrameTime - lastFrameTime;
 			ProcessInput((float)deltaTime);
-			m_Renderer.DrawFrame(m_Camera);
+			m_Scene.gameObjects[0].rotation.z += glm::degrees(SPEED * (float)deltaTime);
+			m_Renderer.DrawFrame(m_Camera, m_Scene);
 			lastFrameTime = currentFrameTime;
 		}
 
