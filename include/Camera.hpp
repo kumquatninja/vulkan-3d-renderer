@@ -34,7 +34,7 @@ namespace KQ {
             }
 
         private:
-            float m_Yaw= -90.0f;
+            float m_Yaw = -90.0f;
             float m_Pitch = -40.0f;
             glm::vec3 m_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);;
 
