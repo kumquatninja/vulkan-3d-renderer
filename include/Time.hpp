@@ -9,7 +9,7 @@ namespace KQ {
             float deltaTime = 0.0f;
             float timeScale = 1.0f;
 
-            float Update()
+            void Update()
             {
                 auto currentFrameTime = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<float, std::chrono::seconds::period> elapsed = currentFrameTime - m_LastFrameTime;
