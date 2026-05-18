@@ -6,15 +6,17 @@
 #include "Scene.hpp"
 #include "GameObject.hpp"
 #include "Time.hpp"
+#include "Config.hpp"
 
 #include <iostream>
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+// const uint32_t WIDTH = 800;
+// const uint32_t HEIGHT = 600;
 
 class KQuatApp {
 public:
 	void run() {
+		LoadConfig();
 		InitWindow();
 		InitScene();
 		InitVulkan();
@@ -28,9 +30,14 @@ private:
 	KQ::Camera m_Camera;
 	KQ::Scene m_Scene;
 	KQ::Time m_Time;
+	KQ::EngineConfig m_Config;
+
+	void LoadConfig() {
+		m_Config = KQ::LoadEngineConfig("config.ini");
+	}
 
 	void InitWindow() {
-		m_WindowManager.Init(WIDTH, HEIGHT, "KQuat Engine", this);
+		m_WindowManager.Init(m_Config.windowWidth, m_Config.windowHeight, "KQuat Engine", this);
 	}
 
 	void InitScene() {
@@ -73,12 +80,11 @@ private:
 		float moveSpeed = 2.5f * deltaTime;
 		float moveSpeedShiftModifier = 2.0f;
 		const glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		const float lookSensitivity = 0.5f;
 
 		if (KQ::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
 		{
 			auto mouseOffset = KQ::Input::GetMouseOffset();
-			auto rotation = mouseOffset * lookSensitivity;
+			auto rotation = mouseOffset * m_Config.lookSensitivity;
 			m_Camera.Rotate(rotation);
 		}
 

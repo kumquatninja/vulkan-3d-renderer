@@ -18,6 +18,9 @@ set(SOURCES
     src/WindowManager.cpp
     src/Input.cpp
     src/Camera.cpp
+    src/Config.cpp
+    external/inih/ini.c
+    external/inih/cpp/INIReader.cpp
 )
 
 add_executable(KQuatApp ${SOURCES})
@@ -29,6 +32,7 @@ target_include_directories(KQuatApp PRIVATE
     external/glm
     external/stb
     external/tinyobjloader
+    external/inih
 )
 
 if(WIN32)
@@ -53,7 +57,6 @@ set(ASSET_SRC "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 set(SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
 
 add_custom_command(TARGET KQuatApp POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:KQuatApp>/assets"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${ASSET_SRC}/textures"
         "$<TARGET_FILE_DIR:KQuatApp>/assets/textures"
@@ -63,6 +66,9 @@ add_custom_command(TARGET KQuatApp POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${SHADER_SRC}"
         "$<TARGET_FILE_DIR:KQuatApp>/shaders"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/config.ini"
+        "$<TARGET_FILE_DIR:KQuatApp>/config.ini"
     
-    COMMENT "Copying assets and shaders to build directory..."
+    COMMENT "Copying assets, shaders, and config to build directory..."
 )

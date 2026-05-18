@@ -10,7 +10,7 @@ namespace KQ {
 
         ~WindowManager() {}
 
-        void Init(int width, int height, const char* title, void* userPointer);
+        void Init(const int& width, const int& height, const char* title, void* userPointer);
 
         inline void Cleanup() {
             glfwDestroyWindow(m_Window);

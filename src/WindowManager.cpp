@@ -2,7 +2,7 @@
 #include "Input.hpp"
 
 namespace KQ {
-    void WindowManager::Init(int width, int height, const char* title, void* userPointer) {
+    void WindowManager::Init(const int& width, const int& height, const char* title, void* userPointer) {
         glfwInit();
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
