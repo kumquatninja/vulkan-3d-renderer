@@ -6,6 +6,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Vulkan REQUIRED)
 
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(external/glfw)
+
 set(SOURCES 
     src/main.cpp 
     src/Renderer.cpp 
@@ -17,18 +23,18 @@ set(SOURCES
 add_executable(KQuatApp ${SOURCES})
 
 target_include_directories(KQuatApp PRIVATE 
-    include 
-    external/glfw-3.4.bin.WIN64/include
+    include
+    ${Vulkan_INCLUDE_DIRS}
+    external/glfw/include
     external/glm
     external/stb
     external/tinyobjloader
-    ${Vulkan_INCLUDE_DIRS}
 )
 
 if(WIN32)
     target_link_libraries(KQuatApp PRIVATE
         Vulkan::Vulkan
-        "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.4.bin.WIN64/lib-vc2022/glfw3dll.lib"
+        glfw
     )
 elseif(UNIX)
     find_package(glfw3 REQUIRED)
@@ -42,16 +48,6 @@ endif()
 set_target_properties(KQuatApp PROPERTIES 
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
-
-if(WIN32)
-    set(GLFW_DLL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.4.bin.WIN64/lib-vc2022/glfw3.dll")
-
-    add_custom_command(TARGET KQuatApp POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${GLFW_DLL_PATH}"
-        "$<TARGET_FILE_DIR:KQuatApp>"
-    )
-endif()
 
 set(ASSET_SRC "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 set(SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
