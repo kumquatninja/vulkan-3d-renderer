@@ -3,12 +3,21 @@
 namespace KQ {
     std::unordered_map<int, bool> Input::m_Keys;
     std::unordered_map<int, bool> Input::m_Buttons;
-    glm::vec2 Input::m_MousePos = {0.0f, 0.0f};
-    glm::vec2 Input::m_LastMousePos = {400.0f, 300.0f};
-    glm::vec2 Input::m_MouseOffset = {0.0f, 0.0f};
+    glm::vec2 Input::m_MousePos;
+    glm::vec2 Input::m_LastMousePos;
+    glm::vec2 Input::m_MouseOffset;
     bool Input::m_FirstMouse = true;
 
-    void Input::Update() {}
+    void Input::Update() {
+        if (m_FirstMouse) {
+            m_LastMousePos = m_MousePos;
+            m_FirstMouse = false;
+        }
+
+        m_MouseOffset.x = m_MousePos.x - m_LastMousePos.x;
+        m_MouseOffset.y = m_LastMousePos.y - m_MousePos.y; // +Y is down in GLFW
+        m_LastMousePos = m_MousePos;
+    }
 
     bool Input::IsKeyReleased(int keycode) { return false; }
 
@@ -22,15 +31,6 @@ namespace KQ {
 
     void Input::MouseCallback(GLFWwindow* window, double xPos, double yPos) {
         m_MousePos = { (float)xPos, (float)yPos };
-
-        if (m_FirstMouse) {
-            m_LastMousePos = m_MousePos;
-            m_FirstMouse = false;
-        }
-
-        m_MouseOffset.x = m_MouseOffset.x - m_LastMousePos.x;
-        m_MouseOffset.y = m_LastMousePos.y - m_MousePos.y;
-        m_LastMousePos = m_MousePos;
     }
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
