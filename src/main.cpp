@@ -52,6 +52,7 @@ private:
 
 			currentFrameTime = glfwGetTime();
 			deltaTime = currentFrameTime - lastFrameTime;
+			KQ::Input::Update();
 			ProcessInput((float)deltaTime);
 			m_Time.Update();
 			m_Scene.gameObjects[0].rotation.z += glm::degrees(SPEED * m_Time.deltaTime);
@@ -72,11 +73,13 @@ private:
 		float moveSpeed = 2.5f * deltaTime;
 		float moveSpeedShiftModifier = 2.0f;
 		const glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		const float lookSensitivity = 0.1f;
+		const float lookSensitivity = 0.5f;
 
 		if (KQ::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
 		{
-			// m_Camera.Rotate(lookSensitivity * KQ::Input::GetMouseOffset() * m_Time.deltaTime);
+			auto mouseOffset = KQ::Input::GetMouseOffset();
+			auto rotation = mouseOffset * lookSensitivity;
+			m_Camera.Rotate(rotation);
 		}
 
 		if (KQ::Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
