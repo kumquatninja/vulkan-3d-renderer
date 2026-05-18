@@ -9,13 +9,7 @@
 namespace KQ {
     class Camera {
         public:
-            Camera(glm::vec3 target = glm::vec3(0.0f), float distance = 5.0f)
-                : m_TargetPos(target), m_Distance(distance)
-            {
-                m_Yaw = -90.0f;
-                m_Pitch = 40.0f;
-                m_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
+            Camera() {
                 UpdateCameraVectors();
             }
 
@@ -32,13 +26,19 @@ namespace KQ {
                 m_Pos += displacement;
             }
 
-        private:
-            float m_Yaw, m_Pitch;
-            float m_Distance;
-            glm::vec3 m_WorldUp;
-            glm::vec3 m_TargetPos;
+            void Rotate(const glm::vec2& offset) {
+                m_Yaw += offset.x;
+                m_Pitch += offset.y;
 
-            glm::vec3 m_Pos;
+                UpdateCameraVectors();
+            }
+
+        private:
+            float m_Yaw= -90.0f;
+            float m_Pitch = -40.0f;
+            glm::vec3 m_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);;
+
+            glm::vec3 m_Pos = glm::vec3(0.0f, 2.0f, 2.0f);
             glm::vec3 m_Forward;
             glm::vec3 m_Right;
             glm::vec3 m_Up;
