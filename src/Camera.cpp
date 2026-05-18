@@ -6,9 +6,12 @@ namespace KQ
     }
 
     void Camera::UpdateCameraVectors() {
-        m_Forward.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-        m_Forward.y = sin(glm::radians(m_Pitch));
-        m_Forward.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+        float radYaw = glm::radians(m_Yaw);
+        float radPitch = glm::radians(m_Pitch);
+
+        m_Forward.x = cos(radYaw) * cos(radPitch);
+        m_Forward.y = sin(radPitch);
+        m_Forward.z = sin(radYaw) * cos(radPitch);
 
         m_Forward = glm::normalize(m_Forward);
         m_Right = glm::normalize(glm::cross(m_Forward, m_WorldUp));
