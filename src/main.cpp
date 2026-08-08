@@ -42,6 +42,23 @@ private:
 
 	void InitScene() {
 		m_Scene.gameObjects.emplace_back();
+		m_Scene.gameObjects.emplace_back();
+		m_Scene.gameObjects.emplace_back();
+
+		// Object 1 - Center
+		m_Scene.gameObjects[0].position = {0.0f, 0.0f, 0.0f};
+		m_Scene.gameObjects[0].rotation = {glm::radians(-90.0f), 0.0f, 0.0f};
+		m_Scene.gameObjects[0].scale = {1.0f, 1.0f, 1.0f};
+
+		// Object 2 - Left
+		m_Scene.gameObjects[1].position = {-2.0f, 0.0f, -1.0f};
+		m_Scene.gameObjects[1].rotation = {glm::radians(-90.0f), glm::radians(45.0f), 0.0f};
+		m_Scene.gameObjects[1].scale = {0.75f, 0.75f, 0.75f};
+
+		// Object 3 - Right
+		m_Scene.gameObjects[2].position = {2.0f, 0.0f, -1.0f};
+		m_Scene.gameObjects[2].rotation = {glm::radians(-90.0f), glm::radians(-45.0f), 0.0f};
+		m_Scene.gameObjects[2].scale = {0.75f, 0.75f, 0.75f};
 	}
 
 	void InitVulkan() {
