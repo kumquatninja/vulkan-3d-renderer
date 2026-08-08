@@ -8,6 +8,11 @@ namespace KQ {
     {
         std::vector<KQ::GameObject> gameObjects;
 
+        GameObject& AddGameObject(const GameObject& object = GameObject()) {
+            gameObjects.push_back(object);
+            return gameObjects.back();
+        }
+
         void Cleanup() {
             gameObjects.clear();
         }

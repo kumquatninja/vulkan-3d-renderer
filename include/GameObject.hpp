@@ -10,7 +10,6 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
-#include <vector>
 
 #if defined(__INTELLISENSE__) || !defined(USE_CPP20_MODULES)
 #   include <vulkan/vulkan_raii.hpp>
@@ -20,15 +19,19 @@ import vulkan_hpp;
 
 namespace KQ {
     struct GameObject {
-        glm::vec3 position = glm::vec3(0.0f);
-        glm::vec3 rotation = glm::vec3(glm::radians(-90.0f), 0.0f, 0.0f);
-        glm::vec3 scale = glm::vec3(1.0f);
-        
+        std::string name = "GameObject";
+        std::string modelPath = "assets/models/viking_room.obj";
+        std::string texturePath = "assets/textures/viking_room.png";
+
         std::vector<VkBuffer> uniformBuffers;
         std::vector<VkDeviceMemory> uniformBuffersMemory;
         std::vector<void*> uniformBuffersMapped;
 
         std::vector<VkDescriptorSet> descriptorSets;
+
+        glm::vec3 position = glm::vec3(0.0f);
+        glm::vec3 rotation = glm::vec3(glm::radians(-90.0f), 0.0f, 0.0f);
+        glm::vec3 scale = glm::vec3(1.0f);
 
         glm::mat4 getModelMatrix() const {
             glm::mat4 model = glm::mat4(1.0f);
@@ -39,6 +42,5 @@ namespace KQ {
             model = glm::scale(model, scale);
             return model;
         }
-        // std::string modelPath = "assets/models/viking_room.obj";
     };
 }

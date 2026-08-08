@@ -30,6 +30,7 @@ namespace KQ {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
+    const int MAX_OBJECTS = 3;
     const int MAX_FRAMES_IN_FLIGHT = 2;
 
     #ifdef NDEBUG
@@ -51,8 +52,9 @@ namespace KQ {
         ~Renderer() {}
 
         void Init(GLFWwindow* window);
-        void DrawFrame(const KQ::Camera& camera, const KQ::Scene& scene);
-        void Cleanup();
+        void LoadScene(KQ::Scene& scene);
+        void DrawFrame(const KQ::Camera& camera, KQ::Scene& scene);
+        void Cleanup(KQ::Scene& scene);
 
         inline VkDevice* GetDevice() { return &device; }
 
@@ -85,11 +87,11 @@ namespace KQ {
         VkBuffer indexBuffer;
         VkDeviceMemory indexBufferMemory;
         VkDescriptorPool descriptorPool;
-        std::vector<VkDescriptorSet> descriptorSets;
+        // std::vector<VkDescriptorSet> descriptorSets;
 
-        std::vector<VkBuffer> uniformBuffers;
-        std::vector<VkDeviceMemory> uniformBuffersMemory;
-        std::vector<void*> uniformBuffersMapped;
+        // std::vector<VkBuffer> uniformBuffers;
+        // std::vector<VkDeviceMemory> uniformBuffersMemory;
+        // std::vector<void*> uniformBuffersMapped;
 
         VkImage textureImage;
         VkDeviceMemory textureImageMemory;
@@ -169,15 +171,15 @@ namespace KQ {
         void CreateVertexBuffer();
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
         void CreateIndexBuffer();
-        void CreateUniformBuffers();
+        void CreateUniformBuffers(KQ::Scene& scene);
         void CreateDescriptorPools();
-        void CreateDescriptorSets();
+        void CreateDescriptorSets(KQ::Scene& scene);
         void CreateCommandBuffers();
         void CreateSyncObjects();
         void RecreateSwapChain();
         void CleanupSwapChain();
-        void UpdateUniformBuffer(uint32_t currentImage, const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp, const KQ::Scene& scene);
-        void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+        void UpdateUniformBuffers(uint32_t currentImage, const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp, const KQ::Scene& scene);
+        void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex, KQ::Scene& scene);
         void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
     };
 }

@@ -1,7 +1,6 @@
 #include "Engine.hpp"
 
 #include "Input.hpp"
-#include "GameObject.hpp"
 
 #include <iostream>
 
@@ -25,24 +24,30 @@ namespace KQ {
 
     void Engine::InitScene() {
         m_Scene.gameObjects.clear();
-        m_Scene.gameObjects.emplace_back();
-        m_Scene.gameObjects.emplace_back();
-        m_Scene.gameObjects.emplace_back();
 
-        // Object 1 - Center
-        m_Scene.gameObjects[0].position = {0.0f, 0.0f, 0.0f};
-        m_Scene.gameObjects[0].rotation = {glm::radians(-90.0f), 0.0f, 0.0f};
-        m_Scene.gameObjects[0].scale = {1.0f, 1.0f, 1.0f};
+        auto& centerObject = m_Scene.AddGameObject();
+        centerObject.name = "Center";
+        centerObject.modelPath = "assets/models/viking_room.obj";
+        centerObject.texturePath = "assets/textures/viking_room.png";
+        centerObject.position = {0.0f, 0.0f, 0.0f};
+        centerObject.rotation = {glm::radians(-90.0f), 0.0f, 0.0f};
+        centerObject.scale = {1.0f, 1.0f, 1.0f};
 
-        // Object 2 - Left
-        m_Scene.gameObjects[1].position = {-2.0f, 0.0f, -1.0f};
-        m_Scene.gameObjects[1].rotation = {glm::radians(-90.0f), glm::radians(45.0f), 0.0f};
-        m_Scene.gameObjects[1].scale = {0.75f, 0.75f, 0.75f};
+        auto& leftObject = m_Scene.AddGameObject();
+        leftObject.name = "Left";
+        leftObject.modelPath = "assets/models/viking_room.obj";
+        leftObject.texturePath = "assets/textures/viking_room.png";
+        leftObject.position = {-2.0f, 0.0f, -1.0f};
+        leftObject.rotation = {glm::radians(-90.0f), glm::radians(45.0f), 0.0f};
+        leftObject.scale = {0.75f, 0.75f, 0.75f};
 
-        // Object 3 - Right
-        m_Scene.gameObjects[2].position = {2.0f, 0.0f, -1.0f};
-        m_Scene.gameObjects[2].rotation = {glm::radians(-90.0f), glm::radians(-45.0f), 0.0f};
-        m_Scene.gameObjects[2].scale = {0.75f, 0.75f, 0.75f};
+        auto& rightObject = m_Scene.AddGameObject();
+        rightObject.name = "Right";
+        rightObject.modelPath = "assets/models/viking_room.obj";
+        rightObject.texturePath = "assets/textures/viking_room.png";
+        rightObject.position = {2.0f, 0.0f, -1.0f};
+        rightObject.rotation = {glm::radians(-90.0f), glm::radians(-45.0f), 0.0f};
+        rightObject.scale = {0.75f, 0.75f, 0.75f};
     }
 
     void Engine::InitRenderer() {
@@ -50,6 +55,8 @@ namespace KQ {
     }
 
     void Engine::MainLoop() {
+        m_Renderer.LoadScene(m_Scene);
+
         while (!m_WindowManager.ShouldWindowClose()) {
             m_WindowManager.PollEvents();
             KQ::Input::Update();
@@ -67,6 +74,8 @@ namespace KQ {
         if (!m_Scene.gameObjects.empty()) {
             constexpr float ROTATION_SPEED = 0.02f;
             m_Scene.gameObjects[0].rotation.z += glm::degrees(ROTATION_SPEED * deltaTime);
+            m_Scene.gameObjects[1].rotation.z += glm::degrees(ROTATION_SPEED * deltaTime);
+            m_Scene.gameObjects[2].rotation.z += glm::degrees(ROTATION_SPEED * deltaTime);
         }
     }
 
@@ -75,7 +84,7 @@ namespace KQ {
     }
 
     void Engine::Cleanup() {
-        m_Renderer.Cleanup();
+        m_Renderer.Cleanup(m_Scene);
         m_WindowManager.Cleanup();
         m_Scene.Cleanup();
     }
