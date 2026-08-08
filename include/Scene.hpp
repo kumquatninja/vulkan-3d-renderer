@@ -1,10 +1,9 @@
 #pragma once
 
 #include <vector>
+#include "GameObject.hpp"
 
 namespace KQ {
-    struct GameObject;
-
     struct Scene
     {
         std::vector<KQ::GameObject> gameObjects;

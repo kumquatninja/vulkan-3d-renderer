@@ -14,6 +14,7 @@ add_subdirectory(external/glfw)
 
 set(SOURCES 
     src/main.cpp 
+    src/Engine.cpp
     src/Renderer.cpp 
     src/WindowManager.cpp
     src/Input.cpp
