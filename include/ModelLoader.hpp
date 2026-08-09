@@ -10,13 +10,13 @@ const std::string MODEL_PATH = "assets/models/viking_room.obj";
 
 namespace KQ {
 namespace ModelLoader {
-        static void LoadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices) {
+        static void LoadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, const std::string& modelPath = MODEL_PATH) {
             tinyobj::attrib_t attrib;
             std::vector<tinyobj::shape_t> shapes;
             std::vector<tinyobj::material_t> materials;
             std::string warn, err;
 
-            if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
+            if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelPath.c_str())) {
                 throw std::runtime_error(warn + err);
             }
 
