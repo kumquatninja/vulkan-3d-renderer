@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
+#include "Mesh.hpp"
 
 #if defined(__INTELLISENSE__) || !defined(USE_CPP20_MODULES)
 #   include <vulkan/vulkan_raii.hpp>
@@ -22,6 +23,8 @@ namespace KQ {
         std::string name = "GameObject";
         std::string modelPath = "assets/models/viking_room.obj";
         std::string texturePath = "assets/textures/viking_room.png";
+
+        MeshRange meshRange;
 
         std::vector<VkBuffer> uniformBuffers;
         std::vector<VkDeviceMemory> uniformBuffersMemory;

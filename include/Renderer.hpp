@@ -80,8 +80,8 @@ namespace KQ {
         std::vector<VkSemaphore> renderFinishedSemaphores;
         std::vector<VkFence> inFlightFences;
         bool framebufferResized = false;
-        std::vector<KQ::Vertex> vertices;
-        std::vector<std::uint32_t> indices;
+        std::vector<KQ::Vertex> m_CombinedVertices;
+        std::vector<std::uint32_t> m_CombinedIndices;
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         VkBuffer indexBuffer;
@@ -167,7 +167,7 @@ namespace KQ {
         void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
         void CreateTextureImageView();
         void CreateTextureSampler();
-        void LoadModel();
+        void LoadModelsFromScene(KQ::Scene& scene);
         void CreateVertexBuffer();
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
         void CreateIndexBuffer();

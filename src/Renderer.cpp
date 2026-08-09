@@ -33,9 +33,9 @@ namespace KQ {
         CreateTextureImage();
         CreateTextureImageView();
         CreateTextureSampler();
-        LoadModel();
-        CreateVertexBuffer();
-        CreateIndexBuffer();
+        // LoadModel();
+        // CreateVertexBuffer();
+        // CreateIndexBuffer();
         // CreateUniformBuffers();
         CreateDescriptorPools();
         // CreateDescriptorSets();
@@ -1042,12 +1042,42 @@ namespace KQ {
 		}
     }
 
-    void Renderer::LoadModel() {
-        ModelLoader::LoadModel(vertices, indices);
+    void Renderer::LoadModelsFromScene(KQ::Scene& scene) {
+		for (KQ::GameObject& gameObject : scene.gameObjects)
+		{
+			std::vector<Vertex> modelVertices;
+			std::vector<uint32_t> modelIndices;
+
+			ModelLoader::LoadModel(modelVertices, modelIndices, gameObject.modelPath);
+
+			gameObject.meshRange.firstVertex = static_cast<uint32_t>(m_CombinedVertices.size());
+			gameObject.meshRange.vertexCount = static_cast<uint32_t>(m_CombinedIndices.size());
+
+			m_CombinedVertices.insert(
+				m_CombinedVertices.end(),
+				modelVertices.begin(),
+				modelVertices.end()
+			);
+
+			const uint32_t vertexOffset = gameObject.meshRange.firstVertex;
+
+			for (uint32_t& index : modelIndices) {
+				index += vertexOffset;
+			}
+
+			gameObject.meshRange.firstIndex = static_cast<uint32_t>(m_CombinedIndices.size());
+			gameObject.meshRange.indexCount = static_cast<uint32_t>(modelIndices.size());
+
+			m_CombinedIndices.insert(
+				m_CombinedIndices.end(),
+				modelIndices.begin(),
+				modelIndices.end()
+			);
+		}
     }
 
     void Renderer::CreateVertexBuffer() {
-		VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+		VkDeviceSize bufferSize = sizeof(m_CombinedVertices[0]) * m_CombinedVertices.size();
 		
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
@@ -1055,7 +1085,7 @@ namespace KQ {
 
 		void* data;
 		vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, vertices.data(), (size_t) bufferSize);
+		memcpy(data, m_CombinedVertices.data(), (size_t) bufferSize);
 		vkUnmapMemory(device, stagingBufferMemory);
 
 		CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
@@ -1079,7 +1109,7 @@ namespace KQ {
     }
 
     void Renderer::CreateIndexBuffer() {
-        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+        VkDeviceSize bufferSize = sizeof(m_CombinedIndices[0]) * m_CombinedIndices.size();
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
@@ -1087,7 +1117,7 @@ namespace KQ {
 
 		void* data;
 		vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, indices.data(), (size_t) bufferSize);
+		memcpy(data, m_CombinedIndices.data(), (size_t) bufferSize);
 		vkUnmapMemory(device, stagingBufferMemory);
 
 		CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
@@ -1100,6 +1130,9 @@ namespace KQ {
 
 	void Renderer::LoadScene(KQ::Scene& scene)
 	{
+		LoadModelsFromScene(scene);
+		CreateVertexBuffer();
+		CreateIndexBuffer();
 		CreateUniformBuffers(scene);
 		CreateDescriptorSets(scene);
 	}
@@ -1405,7 +1438,7 @@ namespace KQ {
 			for (auto& gameObject : scene.gameObjects)
 			{
 				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &gameObject.descriptorSets[m_CurrentFrame], 0, nullptr);
-				vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+				vkCmdDrawIndexed(commandBuffer, gameObject.meshRange.indexCount, 1, gameObject.meshRange.firstIndex, 0, 0);
 			}
 		
 		vkCmdEndRenderPass(commandBuffer);
