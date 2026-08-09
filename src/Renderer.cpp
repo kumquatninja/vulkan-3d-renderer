@@ -1341,11 +1341,10 @@ namespace KQ {
 		for (auto& gameObject : scene.gameObjects)
 		{
 			glm::mat4 model = gameObject.getModelMatrix();
-			UniformBufferObject ubo{
-				.model = model,
-				.view = view,
-				.proj = proj
-			};
+			UniformBufferObject ubo{};
+			ubo.model = model;
+			ubo.view = view;
+			ubo.proj = proj;
 
 			memcpy(gameObject.uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 		}
