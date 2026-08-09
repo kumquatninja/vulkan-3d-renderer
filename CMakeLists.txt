@@ -56,6 +56,7 @@ set_target_properties(KQuatApp PROPERTIES
 
 set(ASSET_SRC "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 set(SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
+set(SCENES_SRC "${CMAKE_CURRENT_SOURCE_DIR}/scenes")
 
 add_custom_command(TARGET KQuatApp POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -70,6 +71,9 @@ add_custom_command(TARGET KQuatApp POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_SOURCE_DIR}/config.ini"
         "$<TARGET_FILE_DIR:KQuatApp>/config.ini"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${SCENES_SRC}"
+        "$<TARGET_FILE_DIR:KQuatApp>/scenes"
     
     COMMENT "Copying assets, shaders, and config to build directory..."
 )

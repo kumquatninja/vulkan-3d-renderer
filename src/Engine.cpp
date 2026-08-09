@@ -1,6 +1,6 @@
 #include "Engine.hpp"
-
 #include "Input.hpp"
+#include "SceneLoader.hpp"
 
 #include <iostream>
 
@@ -25,29 +25,21 @@ namespace KQ {
     void Engine::InitScene() {
         m_Scene.gameObjects.clear();
 
-        auto& centerObject = m_Scene.AddGameObject();
-        centerObject.name = "Center";
-        centerObject.modelPath = "assets/models/viking_room.obj";
-        centerObject.texturePath = "assets/textures/viking_room.png";
-        centerObject.position = {0.0f, 0.0f, 0.0f};
-        centerObject.rotation = {glm::radians(-90.0f), 0.0f, 0.0f};
-        centerObject.scale = {1.0f, 1.0f, 1.0f};
+        KQ::SceneDefinition sceneDef;
+        if (!KQ::SceneLoader::LoadScene("scenes/test_scene.json", sceneDef)) {
+            std::cerr << "Scene could not be loaded" << std::endl;
 
-        auto& leftObject = m_Scene.AddGameObject();
-        leftObject.name = "Left";
-        leftObject.modelPath = "assets/models/viking_room.obj";
-        leftObject.texturePath = "assets/textures/viking_room.png";
-        leftObject.position = {-2.0f, 0.0f, -1.0f};
-        leftObject.rotation = {glm::radians(-90.0f), glm::radians(45.0f), 0.0f};
-        leftObject.scale = {0.75f, 0.75f, 0.75f};
+            return;
+        }
 
-        auto& rightObject = m_Scene.AddGameObject();
-        rightObject.name = "Right";
-        rightObject.modelPath = "assets/models/viking_room.obj";
-        rightObject.texturePath = "assets/textures/viking_room.png";
-        rightObject.position = {2.0f, 0.0f, -1.0f};
-        rightObject.rotation = {glm::radians(-90.0f), glm::radians(-45.0f), 0.0f};
-        rightObject.scale = {0.75f, 0.75f, 0.75f};
+        for (auto& object : sceneDef.objects) {
+            auto& gameObject = m_Scene.AddGameObject();
+            gameObject.modelPath = object.modelPath;
+            gameObject.texturePath = object.texturePath;
+            gameObject.position = object.position;
+            gameObject.rotation = glm::radians(object.rotation);
+            gameObject.scale = object.scale;
+        }
     }
 
     void Engine::InitRenderer() {
@@ -73,9 +65,10 @@ namespace KQ {
 
         if (!m_Scene.gameObjects.empty()) {
             constexpr float ROTATION_SPEED = 0.02f;
-            m_Scene.gameObjects[0].rotation.z += glm::degrees(ROTATION_SPEED * deltaTime);
-            m_Scene.gameObjects[1].rotation.z += glm::degrees(ROTATION_SPEED * deltaTime);
-            m_Scene.gameObjects[2].rotation.z += glm::degrees(ROTATION_SPEED * deltaTime);
+            for (auto& gameObject : m_Scene.gameObjects)
+            {
+                gameObject.rotation.z += glm::degrees(ROTATION_SPEED * deltaTime);
+            }
         }
     }
 

@@ -1,0 +1,28 @@
+{
+    "camera": {
+        "position": [0.0, 0.0, -3.0],
+        "lookAt": [0.0, 0.0, 0.0]
+    },
+    "objects": [{
+        "name": "viking room",
+        "model": "assets/models/viking_room.obj",
+        "texture": "assets/models/viking_room.png",
+        "position": [0.0, 0.0, 0.0],
+        "rotation": [-90.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+    }, {
+        "name": "viking room",
+        "model": "assets/models/viking_room.obj",
+        "texture": "assets/models/viking_room.png",
+        "position": [-2.0, 0.0, -1.0],
+        "rotation": [-90.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+    }, {
+        "name": "viking room",
+        "model": "assets/models/viking_room.obj",
+        "texture": "assets/models/viking_room.png",
+        "position": [2.0, 0.0, -1.0],
+        "rotation": [-90.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+    }]
+}
