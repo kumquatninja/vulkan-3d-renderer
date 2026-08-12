@@ -30,9 +30,9 @@ namespace KQ {
         CreateCommandPool();
         CreateDepthResources();
         CreateFrameBuffers();
-        CreateTextureImage();
-        CreateTextureImageView();
-        CreateTextureSampler();
+        // CreateTextureImage();
+        // CreateTextureImageView();
+        // CreateTextureSampler();
         // LoadModel();
         // CreateVertexBuffer();
         // CreateIndexBuffer();
@@ -835,9 +835,21 @@ namespace KQ {
 		}
     }
 
-    void Renderer::CreateTextureImage() {
+	TextureResource& Renderer::GetOrCreateTexture(const std::string& path)
+	{
+		auto [iter, inserted] = textureCache.try_emplace(path);
+		if (inserted)
+		{
+			CreateTextureImage(path, iter->second);
+			CreateTextureImageView(iter->second);
+			CreateTextureSampler(iter->second);
+		}
+		return iter->second;
+	}
+
+    void Renderer::CreateTextureImage(const std::string& texturePath, TextureResource& outTexture) {
         int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 		VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 		if (!pixels) {
@@ -859,11 +871,11 @@ namespace KQ {
 
 		CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			textureImage, textureImageMemory);
+			outTexture.image, outTexture.memory);
 
-		TransitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		CopyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-		TransitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		TransitionImageLayout(outTexture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		CopyBufferToImage(stagingBuffer, outTexture.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+		TransitionImageLayout(outTexture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		vkDestroyBuffer(device, stagingBuffer, nullptr);
 		vkFreeMemory(device, stagingBufferMemory, nullptr);
@@ -1010,11 +1022,11 @@ namespace KQ {
 		EndSingleTimeCommands(commandBuffer);
     }
 
-    void Renderer::CreateTextureImageView() {
-        textureImageView = CreateImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+    void Renderer::CreateTextureImageView(TextureResource& outTexture) {
+        outTexture.view = CreateImageView(outTexture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
     }
 
-    void Renderer::CreateTextureSampler() {
+    void Renderer::CreateTextureSampler(TextureResource& outTexture) {
         VkSamplerCreateInfo samplerInfo{};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
@@ -1037,7 +1049,7 @@ namespace KQ {
 		samplerInfo.minLod = 0.0f;
 		samplerInfo.maxLod = 0.0f;
 
-		if (vkCreateSampler(device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
+		if (vkCreateSampler(device, &samplerInfo, nullptr, &outTexture.sampler) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create texture sampler!");
 		}
     }
@@ -1049,6 +1061,9 @@ namespace KQ {
 			std::vector<uint32_t> modelIndices;
 
 			ModelLoader::LoadModel(modelVertices, modelIndices, gameObject.modelPath);
+
+			TextureResource texture = {};
+			GetOrCreateTexture(gameObject.texturePath);
 
 			gameObject.meshRange.firstVertex = static_cast<uint32_t>(m_CombinedVertices.size());
 			gameObject.meshRange.vertexCount = static_cast<uint32_t>(m_CombinedIndices.size());
@@ -1130,6 +1145,7 @@ namespace KQ {
 
 	void Renderer::LoadScene(KQ::Scene& scene)
 	{
+		// LoadTexturesFromScene(scene);
 		LoadModelsFromScene(scene);
 		CreateVertexBuffer();
 		CreateIndexBuffer();
@@ -1192,6 +1208,8 @@ namespace KQ {
 				throw std::runtime_error("failed to allocate descriptor sets!");
 			}
 
+			TextureResource& texture = GetOrCreateTexture(gameObject.texturePath);
+
 			for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 				VkDescriptorBufferInfo bufferInfo{};
 				bufferInfo.buffer = gameObject.uniformBuffers[i];
@@ -1200,8 +1218,8 @@ namespace KQ {
 
 				VkDescriptorImageInfo imageInfo{};
 				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				imageInfo.imageView = textureImageView;
-				imageInfo.sampler = textureSampler;
+				imageInfo.imageView = texture.view; //textureImageView;
+				imageInfo.sampler = texture.sampler; //textureSampler;
 
 				std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
@@ -1451,11 +1469,14 @@ namespace KQ {
     void Renderer::Cleanup(KQ::Scene& scene) {
         CleanupSwapChain();
 
-        vkDestroySampler(device, textureSampler, nullptr);
-		vkDestroyImageView(device, textureImageView, nullptr);
+		for (auto iter = textureCache.begin(); iter != textureCache.end(); ++iter)
+		{
+			vkDestroySampler(device, iter->second.sampler, nullptr);
+			vkDestroyImageView(device, iter->second.view, nullptr);
 
-		vkDestroyImage(device, textureImage, nullptr);
-		vkFreeMemory(device, textureImageMemory, nullptr);
+			vkDestroyImage(device, iter->second.image, nullptr);
+			vkFreeMemory(device, iter->second.memory, nullptr);
+		}
 
 		for (auto& gameObject : scene.gameObjects)
 		{

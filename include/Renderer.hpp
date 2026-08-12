@@ -39,6 +39,13 @@ namespace KQ {
         const bool enableValidationLayers = true;
     #endif
 
+    struct TextureResource {
+        VkImage image;
+        VkDeviceMemory memory;
+        VkImageView view;
+        VkSampler sampler;
+    };
+
     struct UniformBufferObject {
         alignas(16) glm::mat4 model;
         alignas(16) glm::mat4 view;
@@ -93,10 +100,12 @@ namespace KQ {
         // std::vector<VkDeviceMemory> uniformBuffersMemory;
         // std::vector<void*> uniformBuffersMapped;
 
-        VkImage textureImage;
-        VkDeviceMemory textureImageMemory;
-        VkImageView textureImageView;
-        VkSampler textureSampler;
+        // VkImage textureImage;
+        // VkDeviceMemory textureImageMemory;
+        // VkImageView textureImageView;
+        // VkSampler textureSampler;
+
+        std::unordered_map<std::string, TextureResource> textureCache;
 
         VkImage depthImage;
         VkDeviceMemory depthImageMemory;
@@ -159,14 +168,15 @@ namespace KQ {
 		VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
         uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
         void CreateFrameBuffers();
-        void CreateTextureImage();
+        TextureResource& GetOrCreateTexture(const std::string& path);
+        void CreateTextureImage(const std::string& texturePath, TextureResource& outTexture);
         void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
         void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
         VkCommandBuffer BeginSingleTimeCommands();
         void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
         void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-        void CreateTextureImageView();
-        void CreateTextureSampler();
+        void CreateTextureImageView(TextureResource& outTexture);
+        void CreateTextureSampler(TextureResource& outTexture);
         void LoadModelsFromScene(KQ::Scene& scene);
         void CreateVertexBuffer();
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
