@@ -163,8 +163,9 @@ namespace KQ {
     }
 
     void Renderer::CreateSurface(GLFWwindow* window) {
-        if (glfwCreateWindowSurface(m_Instance, window, nullptr, &surface) != VK_SUCCESS)
-		{
+		VkResult res = glfwCreateWindowSurface(m_Instance, window, nullptr, &surface);
+		if (res != VK_SUCCESS) {
+			std::cerr << "glfwCreateWindowSurface failed: " << res << std::endl;
 			throw std::runtime_error("failed to create window surface!");
 		}
     }
