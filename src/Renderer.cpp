@@ -27,6 +27,7 @@ namespace KQ {
         CreateRenderPass();
         CreateDescriptorSetLayout();
         CreateGraphicsPipeline();
+    	CreateGridPipeline();
         CreateCommandPool();
         CreateDepthResources();
         CreateFrameBuffers();
@@ -538,7 +539,7 @@ namespace KQ {
 		uboLayoutBinding.binding = 0;
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding.descriptorCount = 1;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
 
 		VkDescriptorSetLayoutBinding samplerLayoutBinding;
@@ -615,9 +616,11 @@ namespace KQ {
 		dynamicState.pDynamicStates = dynamicStates.data();
 
 		VkPipelineViewportStateCreateInfo viewportState{};
-		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewportState.viewportCount = 1;
-		viewportState.scissorCount = 1;
+    	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    	viewportState.viewportCount = 1;
+    	viewportState.pViewports = &viewport;
+    	viewportState.scissorCount = 1;
+    	viewportState.pScissors = &scissor;
 
 		VkPipelineRasterizationStateCreateInfo rasterizer{};
 		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -725,6 +728,114 @@ namespace KQ {
 
 		vkDestroyShaderModule(device, fragShaderModule, nullptr);
 		vkDestroyShaderModule(device, vertShaderModule, nullptr);
+    }
+
+    void Renderer::CreateGridPipeline() {
+	    const auto vertShaderCode = ReadFile("shaders/grid_vert.spv");
+    	const auto fragShaderCode = ReadFile("shaders/grid_frag.spv");
+
+    	VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
+    	VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
+
+    	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+    	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    	vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    	vertShaderStageInfo.module = vertShaderModule;
+    	vertShaderStageInfo.pName = "main";
+
+    	VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+    	fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    	fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    	fragShaderStageInfo.module = fragShaderModule;
+    	fragShaderStageInfo.pName = "main";
+
+    	VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+
+    	// No Vertex Attributes or Bindings
+    	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+    	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+
+    	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+    	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+    	VkPipelineViewportStateCreateInfo viewportState{};
+    	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    	viewportState.viewportCount = 1;
+    	viewportState.scissorCount = 1;
+
+    	// Disable Culling
+    	VkPipelineRasterizationStateCreateInfo rasterizer{};
+    	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    	rasterizer.lineWidth = 1.0f;
+    	rasterizer.cullMode = VK_CULL_MODE_NONE;
+    	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+
+    	VkPipelineMultisampleStateCreateInfo multisampling{};
+    	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+    	// Keep Depth Test & Write Enabled
+    	VkPipelineDepthStencilStateCreateInfo depthStencil{};
+    	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    	depthStencil.depthTestEnable = VK_TRUE;
+    	depthStencil.depthWriteEnable = VK_TRUE;
+    	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+
+    	// Enable Alpha Blending
+    	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+    	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    	colorBlendAttachment.blendEnable = VK_TRUE;
+    	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+    	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+    	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+    	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+    	VkPipelineColorBlendStateCreateInfo colorBlending{};
+    	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    	colorBlending.attachmentCount = 1;
+    	colorBlending.pAttachments = &colorBlendAttachment;
+
+    	std::vector<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+    	VkPipelineDynamicStateCreateInfo dynamicState{};
+    	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    	dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+    	dynamicState.pDynamicStates = dynamicStates.data();
+
+    	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    	pipelineLayoutInfo.setLayoutCount = 1;
+    	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout; // Reusing UBO descriptor
+
+    	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &gridPipelineLayout) != VK_SUCCESS) {
+    		throw std::runtime_error("failed to create grid pipeline layout!");
+    	}
+
+    	VkGraphicsPipelineCreateInfo pipelineInfo{};
+    	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    	pipelineInfo.stageCount = 2;
+    	pipelineInfo.pStages = shaderStages;
+    	pipelineInfo.pVertexInputState = &vertexInputInfo;
+    	pipelineInfo.pInputAssemblyState = &inputAssembly;
+    	pipelineInfo.pViewportState = &viewportState;
+    	pipelineInfo.pRasterizationState = &rasterizer;
+    	pipelineInfo.pMultisampleState = &multisampling;
+    	pipelineInfo.pDepthStencilState = &depthStencil;
+    	pipelineInfo.pColorBlendState = &colorBlending;
+    	pipelineInfo.pDynamicState = &dynamicState;
+    	pipelineInfo.layout = gridPipelineLayout;
+		pipelineInfo.renderPass = renderPass;
+    	pipelineInfo.subpass = 0;
+
+    	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &gridPipeline) != VK_SUCCESS) {
+    		throw std::runtime_error("failed to create grid graphics pipeline!");
+    	}
+
+    	vkDestroyShaderModule(device, fragShaderModule, nullptr);
+    	vkDestroyShaderModule(device, vertShaderModule, nullptr);
     }
 
     VkShaderModule Renderer::CreateShaderModule(const std::vector<char>& code) {
@@ -1459,6 +1570,14 @@ namespace KQ {
 				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &gameObject.descriptorSets[m_CurrentFrame], 0, nullptr);
 				vkCmdDrawIndexed(commandBuffer, gameObject.meshRange.indexCount, 1, gameObject.meshRange.firstIndex, 0, 0);
 			}
+
+    		if (!scene.gameObjects.empty()) {
+    			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, gridPipeline);
+    			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+					gridPipelineLayout, 0, 1,
+					&scene.gameObjects[0].descriptorSets[m_CurrentFrame], 0, nullptr);
+    			vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    		}
 		
 		vkCmdEndRenderPass(commandBuffer);
 
@@ -1499,6 +1618,9 @@ namespace KQ {
 
 		vkDestroyPipeline(device, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+
+    	vkDestroyPipeline(device, gridPipeline, nullptr);
+    	vkDestroyPipelineLayout(device, gridPipelineLayout, nullptr);
 
 		vkDestroyRenderPass(device, renderPass, nullptr);
 

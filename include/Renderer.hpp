@@ -79,7 +79,9 @@ namespace KQ {
         VkRenderPass renderPass;
         VkDescriptorSetLayout descriptorSetLayout;
         VkPipelineLayout pipelineLayout;
+        VkPipelineLayout gridPipelineLayout;
         VkPipeline graphicsPipeline;
+        VkPipeline gridPipeline;
         std::vector<VkFramebuffer> swapChainFramebuffers;
         VkCommandPool commandPool;
         std::vector<VkCommandBuffer> commandBuffers;
@@ -161,6 +163,7 @@ namespace KQ {
         VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
         void CreateDescriptorSetLayout();
         void CreateGraphicsPipeline();
+        void CreateGridPipeline();
         VkShaderModule CreateShaderModule(const std::vector<char>& code);
         void CreateCommandPool();
         void CreateDepthResources();
