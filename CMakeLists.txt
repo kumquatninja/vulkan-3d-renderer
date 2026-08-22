@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Vulkan REQUIRED)
+find_program(GLSLANG_VALIDATOR glslangValidator REQUIRED)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -57,6 +58,30 @@ set_target_properties(KQuatApp PROPERTIES
 set(ASSET_SRC "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 set(SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
 set(SCENES_SRC "${CMAKE_CURRENT_SOURCE_DIR}/scenes")
+
+set(SHADER_OUTPUTS
+    "${SHADER_SRC}/vert.spv"
+    "${SHADER_SRC}/frag.spv"
+    "${SHADER_SRC}/grid_vert.spv"
+    "${SHADER_SRC}/grid_frag.spv"
+)
+
+add_custom_command(
+    OUTPUT ${SHADER_OUTPUTS}
+    COMMAND ${GLSLANG_VALIDATOR} -V "${SHADER_SRC}/shader.vert" -o "${SHADER_SRC}/vert.spv"
+    COMMAND ${GLSLANG_VALIDATOR} -V "${SHADER_SRC}/shader.frag" -o "${SHADER_SRC}/frag.spv"
+    COMMAND ${GLSLANG_VALIDATOR} -V "${SHADER_SRC}/grid.vert" -o "${SHADER_SRC}/grid_vert.spv"
+    COMMAND ${GLSLANG_VALIDATOR} -V "${SHADER_SRC}/grid.frag" -o "${SHADER_SRC}/grid_frag.spv"
+    DEPENDS
+        "${SHADER_SRC}/shader.vert"
+        "${SHADER_SRC}/shader.frag"
+        "${SHADER_SRC}/grid.vert"
+        "${SHADER_SRC}/grid.frag"
+    COMMENT "Compiling Vulkan shaders to SPIR-V..."
+)
+
+add_custom_target(CompileShaders ALL DEPENDS ${SHADER_OUTPUTS})
+add_dependencies(KQuatApp CompileShaders)
 
 add_custom_command(TARGET KQuatApp POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
