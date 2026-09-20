@@ -23,7 +23,10 @@ set(SOURCES
     src/Config.cpp
     external/inih/ini.c
     external/inih/cpp/INIReader.cpp
+    external/tinygltf/tiny_gltf_v3.c
 )
+
+add_compile_definitions(TINYGLTF3_ENABLE_FS)
 
 add_executable(KQuatApp ${SOURCES})
 
@@ -36,6 +39,7 @@ target_include_directories(KQuatApp PRIVATE
     external/tinyobjloader
     external/inih
     external/noclip
+    external/tinygltf
 )
 
 if(WIN32)
