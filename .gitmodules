@@ -16,3 +16,6 @@
 [submodule "external/noclip"]
 	path = external/noclip
 	url = https://github.com/kevinmkchin/noclip.git
+[submodule "external/tinygltf"]
+	path = external/tinygltf
+	url = https://github.com/syoyo/tinygltf.git

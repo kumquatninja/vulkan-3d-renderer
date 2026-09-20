@@ -1178,7 +1178,7 @@ namespace KQ {
 			GetOrCreateTexture(gameObject.texturePath);
 
 			gameObject.meshRange.firstVertex = static_cast<uint32_t>(m_CombinedVertices.size());
-			gameObject.meshRange.vertexCount = static_cast<uint32_t>(m_CombinedIndices.size());
+			gameObject.meshRange.vertexCount = static_cast<uint32_t>(modelVertices.size());
 
 			m_CombinedVertices.insert(
 				m_CombinedVertices.end(),
