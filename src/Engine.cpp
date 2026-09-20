@@ -1,7 +1,7 @@
 #include "Engine.hpp"
 #include "Input.hpp"
 #include "SceneLoader.hpp"
-
+#include <thread>
 #include <iostream>
 
 namespace KQ {
@@ -10,6 +10,7 @@ namespace KQ {
         InitWindow();
         InitScene();
         InitRenderer();
+        InitConsole();
         MainLoop();
         Cleanup();
     }
@@ -46,10 +47,35 @@ namespace KQ {
         m_Renderer.Init(m_WindowManager.GetWindow());
     }
 
+    void Engine::InitConsole() {
+        m_Renderer.BindConsoleCommands(m_Console);
+    }
+
+    void Engine::PollConsoleInput() {
+        while (true) {
+            std::string input; 
+            std::cin >> input; 
+        
+            std::lock_guard<std::mutex> lock(m_ConsoleQueueMutex); 
+            m_ConsoleQueue += " " + input; 
+        }
+    }
+
+    void Engine::CheckConsoleCommandQueue() {
+        std::lock_guard<std::mutex> lock(m_ConsoleQueueMutex); 
+        if(!m_ConsoleQueue.empty()) 
+        { 
+            m_Console.execute(m_ConsoleQueue, std::cout);
+            m_ConsoleQueue = std::string(); 
+        } 
+    }
+
     void Engine::MainLoop() {
+        std::thread inputCheckingThread(&Engine::PollConsoleInput, this);
         m_Renderer.LoadScene(m_Scene);
 
         while (!m_WindowManager.ShouldWindowClose()) {
+            CheckConsoleCommandQueue();
             m_WindowManager.PollEvents();
             KQ::Input::Update();
             m_Time.Update();
@@ -58,6 +84,7 @@ namespace KQ {
         }
 
         vkDeviceWaitIdle(*m_Renderer.GetDevice());
+        inputCheckingThread.join();
     }
 
     void Engine::Update(float deltaTime) {

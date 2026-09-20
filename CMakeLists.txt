@@ -35,6 +35,7 @@ target_include_directories(KQuatApp PRIVATE
     external/stb
     external/tinyobjloader
     external/inih
+    external/noclip
 )
 
 if(WIN32)

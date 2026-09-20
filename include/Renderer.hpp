@@ -18,6 +18,7 @@
 #include "Vertex.h"
 #include "Camera.hpp"
 #include "Scene.hpp"
+#include "noclip.h"
 
 namespace KQ {
     const std::string TEXTURE_PATH = "assets/models/viking_room.png";
@@ -62,6 +63,7 @@ namespace KQ {
         void LoadScene(KQ::Scene& scene);
         void DrawFrame(const KQ::Camera& camera, KQ::Scene& scene);
         void Cleanup(KQ::Scene& scene);
+        void BindConsoleCommands(noclip::console& console);
 
         inline VkDevice* GetDevice() { return &device; }
 
@@ -134,6 +136,8 @@ namespace KQ {
 
         VkDevice device;
         VkQueue graphicsQueue;
+
+        bool m_DebugShowGrid = false;
 
         void CreateInstance();
         bool CheckValidationLayerSupport();

@@ -13,3 +13,6 @@
 [submodule "external/inih"]
 	path = external/inih
 	url = https://github.com/benhoyt/inih.git
+[submodule "external/noclip"]
+	path = external/noclip
+	url = https://github.com/kevinmkchin/noclip.git

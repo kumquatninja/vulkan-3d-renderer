@@ -1571,7 +1571,7 @@ namespace KQ {
 				vkCmdDrawIndexed(commandBuffer, gameObject.meshRange.indexCount, 1, gameObject.meshRange.firstIndex, 0, 0);
 			}
 
-    		if (!scene.gameObjects.empty()) {
+    		if (!scene.gameObjects.empty() && m_DebugShowGrid) {
     			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, gridPipeline);
     			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
 					gridPipelineLayout, 0, 1,
@@ -1648,4 +1648,9 @@ namespace KQ {
             func(instance, debugMessenger, pAllocator);
         }
     }
+
+	void Renderer::BindConsoleCommands(noclip::console& console)
+	{
+		console.bind_cvar("showgrid", &m_DebugShowGrid);
+	}
 }
