@@ -418,3 +418,6 @@ tags
 *.o
 build*
 *.exe
+
+# Shaders
+*.spv
