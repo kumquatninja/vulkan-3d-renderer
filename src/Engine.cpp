@@ -49,6 +49,7 @@ namespace KQ {
 
     void Engine::InitConsole() {
         m_Renderer.BindConsoleCommands(m_Console);
+        m_WindowManager.BindConsoleCommands(m_Console);
     }
 
     void Engine::PollConsoleInput() {
@@ -75,16 +76,16 @@ namespace KQ {
         m_Renderer.LoadScene(m_Scene);
 
         while (!m_WindowManager.ShouldWindowClose()) {
-            CheckConsoleCommandQueue();
             m_WindowManager.PollEvents();
             KQ::Input::Update();
             m_Time.Update();
             Update(m_Time.deltaTime);
             Render();
+            CheckConsoleCommandQueue();
         }
 
         vkDeviceWaitIdle(*m_Renderer.GetDevice());
-        inputCheckingThread.join();
+        inputCheckingThread.detach();
     }
 
     void Engine::Update(float deltaTime) {

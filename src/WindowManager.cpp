@@ -28,4 +28,10 @@ namespace KQ {
             manager->m_Resized = true;
         }
     }
+
+    void WindowManager::BindConsoleCommands(noclip::console& console) {
+        console.bind_cmd("close", [this](std::istream&, std::ostream&) {
+            SetWindowShouldClose();
+        });
+    }
 }

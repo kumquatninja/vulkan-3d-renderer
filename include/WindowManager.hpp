@@ -2,6 +2,7 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#include "noclip.h"
 
 namespace KQ {
     class WindowManager {
@@ -11,6 +12,7 @@ namespace KQ {
         ~WindowManager() {}
 
         void Init(const int& width, const int& height, const char* title, void* userPointer);
+        void BindConsoleCommands(noclip::console& console);
 
         inline void Cleanup() {
             glfwDestroyWindow(m_Window);
@@ -56,5 +58,6 @@ namespace KQ {
         bool m_Resized = false;
 
         static void FramebufferResizeCallback(GLFWwindow* window, int width, int height);
+        inline void SetWindowShouldClose() { glfwSetWindowShouldClose(m_Window, GLFW_TRUE); }
     };
 }
