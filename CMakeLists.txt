@@ -13,6 +13,7 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(external/glfw)
+add_subdirectory(external/KTX-Software)
 
 set(SOURCES 
     src/main.cpp 
@@ -47,6 +48,7 @@ if(WIN32)
     target_link_libraries(KQuatApp PRIVATE
         Vulkan::Vulkan
         glfw
+        ktx
     )
 elseif(UNIX)
     find_package(glfw3 REQUIRED)
@@ -54,12 +56,15 @@ elseif(UNIX)
     target_link_libraries(KQuatApp PRIVATE
         Vulkan::Vulkan
         glfw
+        ktx
     )
 endif()
 
 set_target_properties(KQuatApp PROPERTIES 
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+target_compile_definitions(KQuatApp PRIVATE KTX_API_ABSTRACT)
 
 set(ASSET_SRC "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 set(SHADER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/shaders")

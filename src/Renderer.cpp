@@ -4,8 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <ktx.h>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -960,13 +959,22 @@ namespace KQ {
 	}
 
     void Renderer::CreateTextureImage(const std::string& texturePath, TextureResource& outTexture) {
-        int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-		VkDeviceSize imageSize = texWidth * texHeight * 4;
+		ktxTexture* kTexture;
+		KTX_error_code result = ktxTexture_CreateFromNamedFile(
+			texturePath.c_str(),
+			KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT,
+			&kTexture
+		);
 
-		if (!pixels) {
-			throw std::runtime_error("failed to load texture image!");
+		if (result != KTX_SUCCESS) {
+			throw std::runtime_error("failed to load ktx texture image!");
 		}
+
+		// Get texture dimensions and data
+		uint32_t texWidth = kTexture->baseWidth;
+		uint32_t texHeight = kTexture->baseHeight;
+		ktx_size_t imageSize = ktxTexture_GetImageSize(kTexture, 0);
+		ktx_uint8_t* ktxTextureData = ktxTexture_GetData(kTexture);
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
@@ -976,10 +984,8 @@ namespace KQ {
 
 		void* data;
 		vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
-		memcpy(data, pixels, static_cast<size_t>(imageSize));
+		memcpy(data, ktxTextureData, static_cast<size_t>(imageSize));
 		vkUnmapMemory(device, stagingBufferMemory);
-
-		stbi_image_free(pixels);
 
 		CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -991,6 +997,8 @@ namespace KQ {
 
 		vkDestroyBuffer(device, stagingBuffer, nullptr);
 		vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+		ktxTexture_Destroy(kTexture);
     }
 
     void Renderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
